@@ -1275,6 +1275,7 @@ function vislimit(form) {
       if (alt_moon >= 0.) {
 
          bmag = 27.78151-log(b/0.263)/0.921034;
+  	 document.form.Bmmag.value = round(bmag*100)/100.;
 
 	 if (b>1000) {
 
@@ -1288,7 +1289,6 @@ function vislimit(form) {
 
 	    document.form.Bmnl.value = round(100*b)/100;
 
-   	    document.form.Bmmag.value = round(bmag*100)/100.;
 
          }
 
