@@ -32,7 +32,68 @@ var DEG_IN_RADIAN = 57.2957795130823,
 
 // ==================================================================
 
+function initialize() {
+    // parse the query string
+    var test_script_name = "test_script.js";
+    var test_mode = "";
+    var debug = false;
+    var invalid = [];
+    var qstring = window.location.search.slice(1);
+    var qlist = qstring.split("&");
+    for (var i = 0; i < qlist.length; i++) {
+        var q = qlist[i].split("=");
+        switch (q[0]) {
+            case "":
+                break;
+            case "debug":
+                debug = true;
+                break;
+            case "test":
+                test_mode = "test";
+                if (q.length > 1)
+                    test_script_name = q[1];
+                break;
+            case "mode":
+                test_mode = q[1];
+                break;
+            default:
+                invalid.push(q[0]);
+        }
+    }
+
+    if (invalid.length)
+        alert("invalid parameters: " + invalid.join(", "));
+
+    // start the debugger if requested
+    if (debug)
+        debugger;
+
+    // if no test was requested, just set the current time and carry on as usual
+    if (test_mode == "") {
+        gettime();
+        return;
+    }
+
+    // load the test script and execute run_test()
+    var test_output_div = document.getElementById("test_output");
+    var test_script = document.createElement("script");
+    test_script.onload = function () {
+        try {
+            test_output_div.innerHTML = run_test(test_mode);
+        } catch(e) {
+            alert("test did not run");
+        }
+    }
+    test_script.type = "text/javascript";
+    test_script.async = false;
+    test_script.src = test_script_name;
+    document.head.appendChild(test_script);
+}
+
+// ==================================================================
+
 function gettime() {
+    // set the current time
     var c = new Date();
     var min = c.getMinutes();
     var sec = c.getSeconds();
@@ -838,7 +899,7 @@ var pageTracker = _gat._getTracker("UA-3694270-1");
 pageTracker._initData();
 pageTracker._trackPageview();
 </script>
-<BODY ONLOAD="gettime()">
+<BODY ONLOAD="initialize()">
 
 <FORM action="post" name="form">
     <TABLE BORDER=3 CELLSPACING=3 CELLPADDING=5 WIDTH="100%" BGCOLOR="#AAAAAA">
@@ -1127,6 +1188,7 @@ pageTracker._trackPageview();
 
         </tr>
     </table>
+    <div id="test_output"></div>
 </FORM>
 
 <p>
